@@ -33,4 +33,12 @@ router.get('/:quizId', (req, res) => {
   }
 })
 
+router.delete('/:quizId', (req, res) => {
+  try {
+    res.status(200).json(Quiz.delete(req.params.quizId))
+  } catch (err) {
+    res.status(500).json(err)
+  }
+})
+
 module.exports = router
