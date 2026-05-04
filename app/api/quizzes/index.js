@@ -1,6 +1,7 @@
 const { Router } = require('express')
 
 const { Quiz } = require('../../models')
+const QuestionRouter = require('./questions')
 
 const router = new Router()
 
@@ -57,5 +58,7 @@ router.put('/:quizId', (req, res) => {
     res.status(500).json(err)
   }
 })
+
+router.use('/:quizId/question', QuestionRouter)
 
 module.exports = router
