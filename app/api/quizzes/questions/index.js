@@ -7,7 +7,9 @@ const router = new Router({ mergeParams: true })
 router.get('/', (req, res) => {
   try {
     const allQuestions = Question.get()
-    const quizQuestions = allQuestions.filter((q) => q.quizId === parseInt(res.params.questionId, 10))
+    const quizQuestions = allQuestions.filter(
+      (q) => q.quizId === parseInt(req.params.quizId, 10),
+    )
 
     res.status(200).json(quizQuestions)
   } catch (err) {
@@ -29,8 +31,9 @@ router.post('/', (req, res) => {
   } catch (err) {
     if (err.name === 'ValidationError') {
       res.status(400).json(err.extra)
+    } else {
+      res.status(500).json(err)
     }
-    res.status(500).json(err)
   }
 })
 
@@ -47,32 +50,38 @@ router.get('/:questionId', (req, res) => {
 router.put('/:questionId', (req, res) => {
   try {
     const allQuestions = Question.get()
-    const questionExistsInQuiz = allQuestions.filter(
+    const questionExistsInQuiz = allQuestions.find(
       (q) => q.quizId === parseInt(req.params.quizId, 10)
-          && q.quizId === parseInt(req.params.questionId, 10),
+          && q.id === parseInt(req.params.questionId, 10),
     )
 
     if (!questionExistsInQuiz) {
       res.status(404).json({ error: 'Question introuvable pour ce quiz' })
+      return
     }
 
     const updatedQuestion = Question.update(req.params.questionId, { ...req.body })
     res.status(200).json(updatedQuestion)
   } catch (err) {
-    res.status(500).json(err)
+    if (err.name === 'ValidationError') {
+      res.status(400).json(err.extra)
+    } else {
+      res.status(500).json(err)
+    }
   }
 })
 
 router.delete('/:questionId', (req, res) => {
   try {
     const allQuestions = Question.get()
-    const questionExistsInQuiz = allQuestions.filter(
+    const questionExistsInQuiz = allQuestions.find(
       (q) => q.quizId === parseInt(req.params.quizId, 10)
-          && q.quizId === parseInt(req.params.questionId, 10),
+          && q.id === parseInt(req.params.questionId, 10),
     )
 
     if (!questionExistsInQuiz) {
       res.status(404).json({ error: 'Question introuvable pour ce quiz' })
+      return
     }
 
     const deletedQuestion = Question.delete(req.params.questionId)
