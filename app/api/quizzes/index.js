@@ -4,6 +4,7 @@ const { Quiz } = require('../../models')
 
 const router = new Router()
 
+// Récup liste Quiz
 router.get('/', (req, res) => {
   try {
     res.status(200).json(Quiz.get())
@@ -12,6 +13,7 @@ router.get('/', (req, res) => {
   }
 })
 
+// Créer un Quiz
 router.post('/', (req, res) => {
   try {
     const quiz = Quiz.create({ ...req.body })
@@ -25,6 +27,7 @@ router.post('/', (req, res) => {
   }
 })
 
+// Récup un seul quiz
 router.get('/:quizId', (req, res) => {
   try {
     res.status(200).json(Quiz.getById(req.params.quizId))
@@ -33,10 +36,24 @@ router.get('/:quizId', (req, res) => {
   }
 })
 
+// Supprimer un Quiz
 router.delete('/:quizId', (req, res) => {
   try {
     res.status(200).json(Quiz.delete(req.params.quizId))
   } catch (err) {
+    res.status(500).json(err)
+  }
+})
+
+// Modifier un Quiz
+router.put('/:quizId', (req, res) => {
+  try {
+    const updateQuiz = Quiz.update(req.params.quizId, { ...req.body })
+    res.status(200).json(updateQuiz)
+  } catch (err) {
+    if (err.name === 'ValidationError') {
+      res.status(400).json(err)
+    }
     res.status(500).json(err)
   }
 })
